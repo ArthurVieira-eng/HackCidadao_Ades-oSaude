@@ -1,17 +1,8 @@
+# loginevent.py
+
 import tkinter as tk
 from tkinter import messagebox
 import mysql.connector
-import re
-
-# Função para validar número de telefone
-def validar_telefone(telefone):
-    padrao = r"^\d{10,11}$"  # Aceita números com 10 ou 11 dígitos
-    return re.match(padrao, telefone)
-
-# Função para validar email
-def validar_email(email):
-    padrao = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-    return re.match(padrao, email)
 
 # Função para conectar ao banco de dados MySQL
 def conectar():
@@ -27,7 +18,7 @@ def validar_cpf(cpf):
     return cpf.isdigit() and len(cpf) == 11
 
 # Função para salvar os dados no banco MySQL
-def salvar_usuario(nome, telefone, idade, doencas, cpf, email, remedio, horarios):
+def salvar_usuario(nome, telefone, idade, doencas, cpf, remedio, horarios):
     try:
         conn = conectar()
         cursor = conn.cursor()
@@ -59,25 +50,16 @@ def verificar_login():
     idade = entry_idade.get()
     doencas = entry_doencas.get()
     cpf = entry_cpf.get()
-    email = entry_email.get()  # Novo campo para email
     remedio = entry_remedio.get()
     horarios = entry_horarios.get()
 
-    if nome and telefone and idade and cpf and email:
+    if nome and telefone and idade and cpf:
         if not validar_cpf(cpf):
             messagebox.showerror("Erro", "CPF inválido! O CPF deve ter 11 dígitos numéricos.")
             return
-        
-        if not validar_telefone(telefone):
-            messagebox.showerror("Erro", "Telefone inválido! Insira um número com 10 ou 11 dígitos.")
-            return
-        
-        if not validar_email(email):
-            messagebox.showerror("Erro", "E-mail inválido! Insira um e-mail válido.")
-            return
 
-        salvar_usuario(nome, telefone, idade, doencas, cpf, email, remedio, horarios)
-        abrir_proxima_tela(nome, telefone, idade, doencas, cpf, email, remedio, horarios)
+        salvar_usuario(nome, telefone, idade, doencas, cpf, remedio, horarios)
+        abrir_proxima_tela(nome, telefone, idade, doencas, cpf, remedio, horarios)
     else:
         messagebox.showerror("Erro", "Por favor, preencha todos os campos obrigatórios!")
 
@@ -110,7 +92,6 @@ def editar_informacoes(proxima_tela, nome, telefone, idade, doencas, cpf, remedi
         nova_idade = entry_idade.get()
         novas_doencas = entry_doencas.get()
         novo_cpf = entry_cpf.get()
-        novo_email = entry_email.get()
         novo_remedio = entry_remedio.get()
         novo_horario = entry_horarios.get()
 
@@ -133,8 +114,8 @@ def editar_informacoes(proxima_tela, nome, telefone, idade, doencas, cpf, remedi
 
         tk.Button(proxima_tela, text="Sair", font=("Arial", 14), bg="#FF6347", command=proxima_tela.destroy).pack(pady=10)
 
-    # Campos editáveis (use a função uma vez só para criar os campos)
-    def criar_campo_rotulado(texto, valor_inicial=""):
+    # Campos editáveis
+    def criar_campo_rotulado(texto, valor_inicial):
         label = tk.Label(proxima_tela, text=texto, font=("Arial", 14))
         label.pack(pady=5)
         entry = tk.Entry(proxima_tela, font=("Arial", 14))
@@ -142,13 +123,11 @@ def editar_informacoes(proxima_tela, nome, telefone, idade, doencas, cpf, remedi
         entry.pack(pady=5)
         return entry
 
-    # Preenche os campos com os dados existentes
     entry_nome = criar_campo_rotulado("Nome:", nome)
     entry_telefone = criar_campo_rotulado("Telefone:", telefone)
     entry_idade = criar_campo_rotulado("Idade:", idade)
-    entry_doencas = criar_campo_rotulado("Doenças (se tiver):", doencas)
+    entry_doencas = criar_campo_rotulado("Doenças:", doencas)
     entry_cpf = criar_campo_rotulado("CPF:", cpf)
-    entry_email = criar_campo_rotulado("E-mail:", "")
     entry_remedio = criar_campo_rotulado("Remédio:", remedio)
     entry_horarios = criar_campo_rotulado("Horário do Remédio:", horarios)
 
@@ -160,15 +139,14 @@ root.title("Tela de Cadastro - Evento de Saúde")
 root.geometry("500x600")
 root.config(bg="#f0f0f0")
 
-# Função para criar o campo rotulado
-def criar_campo_rotulado(texto):
-    label = tk.Label(root, text=texto, font=("Arial", 14))
+# Campos do formulário
+def criar_campo_rotulado(texto, font=("Arial", 14)):
+    label = tk.Label(root, text=texto, font=font)
     label.pack(pady=5)
-    entrada = tk.Entry(root, font=("Arial", 14))
+    entrada = tk.Entry(root, font=font)
     entrada.pack(pady=5)
     return entrada
 
-# Campos do formulário
 entry_nome = criar_campo_rotulado("Nome:")
 entry_telefone = criar_campo_rotulado("Telefone:")
 entry_idade = criar_campo_rotulado("Idade:")
@@ -176,9 +154,20 @@ entry_doencas = criar_campo_rotulado("Doenças (se tiver):")
 entry_cpf = criar_campo_rotulado("CPF:")
 entry_remedio = criar_campo_rotulado("Remédio:")
 entry_horarios = criar_campo_rotulado("Horário do Remédio:")
-entry_email = criar_campo_rotulado("E-mail:")
 
 # Botão de cadastro
 tk.Button(root, text="Cadastrar", font=("Arial", 16), bg="#4CAF50", fg="white", command=verificar_login).pack(pady=20)
 
 root.mainloop()
+
+#database
+
+import mysql.connector
+
+def conectar():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",       # ex: 'root'
+        password="teste10",     # ex: '1234'
+        database="registros"
+    )
