@@ -102,7 +102,7 @@ Painéis de monitoramento para agentes de saúde
 
 Gamificação ou ranking por adesão 
 
-## 💎 Contato
+## 💎 Contatos: 
 
 **Email:** arthurv.o.2507@gmail.com
 
